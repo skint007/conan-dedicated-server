@@ -4,11 +4,19 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'Dockerfile'
+      - 'startup.sh'
+      - '.github/workflows/docker-build.yml'
     tags:
       - 'v*'
   pull_request:
     branches:
       - main
+    paths:
+      - 'Dockerfile'
+      - 'startup.sh'
+      - '.github/workflows/docker-build.yml'
 
 env:
   REGISTRY: ghcr.io

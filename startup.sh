@@ -94,4 +94,4 @@ echo "-------------------------------------"
 
 SERVER_EXE=${SERVER_EXE:-"ConanSandboxServer-Win64-Test.exe"}
 
-exec su steam -c "xvfb-run --auto-servernum wine64 ${STEAMAPPDIR}/${SERVER_EXE} ${CONAN_ARGS}"
+exec su steam -c "xvfb-run --auto-servernum wine ${STEAMAPPDIR}/${SERVER_EXE} ${CONAN_ARGS}"
