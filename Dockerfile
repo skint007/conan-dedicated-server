@@ -13,24 +13,12 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 ARG DEBIAN_FRONTEND=noninteractive
 
-# Install Wine via WineHQ repository and other dependencies
+# Install Wine and other dependencies
 RUN set -x \
     && apt-get update \
     && apt-get install -y --no-install-recommends \
-        software-properties-common \
-        gpg-agent \
-        wget \
-    # Add WineHQ GPG key and repository (Ubuntu Noble)
-    && mkdir -pm755 /etc/apt/keyrings \
-    && wget -O /etc/apt/keyrings/winehq-archive.key \
-        https://dl.winehq.org/wine-builds/winehq.key \
-    && wget -NP /etc/apt/sources.list.d/ \
-        https://dl.winehq.org/wine-builds/ubuntu/dists/noble/winehq-noble.sources \
-    && apt-get update \
-    # Install Wine (--install-recommends required for Wine's 32-bit libraries)
-    && apt-get install -y --install-recommends \
-        winehq-stable \
-    && apt-get install -y --no-install-recommends \
+        wine \
+        wine64 \
         winbind \
         xvfb \
         xauth \
@@ -41,10 +29,6 @@ RUN set -x \
     && mkdir -p "${STEAMAPPDIR}" \
     && chown steam:steam "${STEAMAPPDIR}" \
     # Clean up
-    && apt-get remove --purge -y \
-        software-properties-common \
-        gpg-agent \
-        wget \
     && apt-get clean autoclean \
     && apt-get autoremove -y \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
