@@ -18,6 +18,7 @@ RUN set -x \
     && apt-get update \
     && apt-get install -y --no-install-recommends \
         wine \
+        wine32:i386 \
         wine64 \
         winbind \
         xvfb \
