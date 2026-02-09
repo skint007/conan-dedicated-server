@@ -104,8 +104,16 @@ echo "-------------------------------------"
 echo " Initializing Wine prefix..."
 echo "-------------------------------------"
 
-# Only initialize if the prefix doesn't exist yet
-if [ ! -d "${WINEPREFIX}" ]; then
+# Use a marker file to track successful initialization
+WINE_INIT_MARKER="${WINEPREFIX}/.conan-init-done"
+
+if [ ! -f "${WINE_INIT_MARKER}" ]; then
+    # Remove any partial/broken prefix from a previous failed attempt
+    if [ -d "${WINEPREFIX}" ]; then
+        echo "Removing incomplete Wine prefix..."
+        rm -rf "${WINEPREFIX}"
+    fi
+
     echo "Creating new Wine prefix at ${WINEPREFIX}..."
     su steam -c "DISPLAY=:${DISPLAY_NUM} WINEPREFIX=${WINEPREFIX} WINEARCH=${WINEARCH} wineboot --init" 2>&1
     su steam -c "DISPLAY=:${DISPLAY_NUM} WINEPREFIX=${WINEPREFIX} wineserver --wait" 2>&1 || true
@@ -113,8 +121,12 @@ if [ ! -d "${WINEPREFIX}" ]; then
     echo "Installing Visual C++ runtime..."
     su steam -c "DISPLAY=:${DISPLAY_NUM} WINEPREFIX=${WINEPREFIX} WINEARCH=${WINEARCH} winetricks -q vcrun2022" 2>&1
     su steam -c "DISPLAY=:${DISPLAY_NUM} WINEPREFIX=${WINEPREFIX} wineserver --wait" 2>&1 || true
+
+    # Mark initialization as complete
+    su steam -c "touch ${WINE_INIT_MARKER}"
+    echo "Wine prefix initialized successfully."
 else
-    echo "Wine prefix already exists, skipping initialization."
+    echo "Wine prefix already initialized, skipping."
 fi
 
 # ---- Launch Server ----
