@@ -6,6 +6,29 @@ The game server files are downloaded on first startup and persisted in a Docker 
 
 ## Quick Start
 
+#### Using `docker compose`:
+```yaml
+services:
+  conan-server:
+    image: ghcr.io/skint007/conan-dedicated-server:latest
+    ports:
+      - "7777:7777/udp"
+      - "7778:7778/udp"
+      - "27015:27015/udp"
+    volumes:
+      - conan-data:/home/steam/conan-dedicated
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - CONAN_ARGS=-log -nosteam
+      # - SERVER_EXE=ConanSandboxServer-Win64-Test.exe
+    restart: unless-stopped
+
+volumes:
+  conan-data:
+
+```
+
 ```bash
 docker compose up -d
 ```
