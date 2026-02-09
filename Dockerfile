@@ -8,6 +8,8 @@ ENV CONAN_ARGS="-log -nosteam"
 ENV PUID=1000
 ENV PGID=1000
 ENV SERVER_EXE=ConanSandboxServer-Win64-Test.exe
+ENV WINEPREFIX=/home/steam/.wine
+ENV WINEARCH=win64
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
@@ -23,6 +25,8 @@ RUN set -x \
         winbind \
         xvfb \
         xauth \
+        cabextract \
+        winetricks \
     # Create steam user and group (use -f to avoid failure if GID already exists)
     && groupadd -f -g 1000 steam \
     && useradd -m -o -u 1000 -g steam steam \

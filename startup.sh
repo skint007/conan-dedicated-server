@@ -87,13 +87,35 @@ else
     echo "No mods configured."
 fi
 
+# ---- Start Xvfb ----
+echo "-------------------------------------"
+echo " Starting virtual display..."
+echo "-------------------------------------"
+
+DISPLAY_NUM=99
+Xvfb :${DISPLAY_NUM} -screen 0 1024x768x16 &
+export DISPLAY=:${DISPLAY_NUM}
+
+# Give Xvfb a moment to start
+sleep 2
+
 # ---- Initialize Wine Prefix ----
 echo "-------------------------------------"
 echo " Initializing Wine prefix..."
 echo "-------------------------------------"
 
-su steam -c "xvfb-run --auto-servernum wineboot --init" 2>&1
-su steam -c "xvfb-run --auto-servernum wineserver --wait" 2>&1 || true
+# Only initialize if the prefix doesn't exist yet
+if [ ! -d "${WINEPREFIX}" ]; then
+    echo "Creating new Wine prefix at ${WINEPREFIX}..."
+    su steam -c "DISPLAY=:${DISPLAY_NUM} WINEPREFIX=${WINEPREFIX} WINEARCH=${WINEARCH} wineboot --init" 2>&1
+    su steam -c "DISPLAY=:${DISPLAY_NUM} WINEPREFIX=${WINEPREFIX} wineserver --wait" 2>&1 || true
+
+    echo "Installing Visual C++ runtime..."
+    su steam -c "DISPLAY=:${DISPLAY_NUM} WINEPREFIX=${WINEPREFIX} WINEARCH=${WINEARCH} winetricks -q vcrun2022" 2>&1
+    su steam -c "DISPLAY=:${DISPLAY_NUM} WINEPREFIX=${WINEPREFIX} wineserver --wait" 2>&1 || true
+else
+    echo "Wine prefix already exists, skipping initialization."
+fi
 
 # ---- Launch Server ----
 echo "-------------------------------------"
@@ -102,4 +124,4 @@ echo "-------------------------------------"
 
 SERVER_EXE=${SERVER_EXE:-"ConanSandboxServer-Win64-Test.exe"}
 
-exec su steam -c "xvfb-run --auto-servernum wine ${STEAMAPPDIR}/${SERVER_EXE} ${CONAN_ARGS}"
+exec su steam -c "DISPLAY=:${DISPLAY_NUM} WINEPREFIX=${WINEPREFIX} WINEARCH=${WINEARCH} wine ${STEAMAPPDIR}/${SERVER_EXE} ${CONAN_ARGS}"
