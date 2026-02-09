@@ -22,9 +22,9 @@ RUN set -x \
         winbind \
         xvfb \
         xauth \
-    # Create steam user and group
-    && groupadd -g 1000 steam \
-    && useradd -m -u 1000 -g steam steam \
+    # Create steam user and group (use -f to avoid failure if GID already exists)
+    && groupadd -f -g 1000 steam \
+    && useradd -m -o -u 1000 -g steam steam \
     # Create the game directory
     && mkdir -p "${STEAMAPPDIR}" \
     && chown steam:steam "${STEAMAPPDIR}" \
