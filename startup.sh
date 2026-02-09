@@ -87,6 +87,14 @@ else
     echo "No mods configured."
 fi
 
+# ---- Initialize Wine Prefix ----
+echo "-------------------------------------"
+echo " Initializing Wine prefix..."
+echo "-------------------------------------"
+
+su steam -c "xvfb-run --auto-servernum wineboot --init" 2>&1
+su steam -c "xvfb-run --auto-servernum wineserver --wait" 2>&1 || true
+
 # ---- Launch Server ----
 echo "-------------------------------------"
 echo " Starting Conan Exiles Dedicated Server..."
